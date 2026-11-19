@@ -1,0 +1,162 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+    min-height: 100vh;
+    color: #4a1942;
+    padding: 20px;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+header {
+    text-align: center;
+    padding: 30px 20px;
+}
+
+h1 {
+    font-size: 1.8rem;
+    color: #9e2d55;
+    margin-bottom: 10px;
+}
+
+.subtitulo {
+    font-size: 1.1rem;
+    color: #b76e79;
+}
+
+.coracoes {
+    font-size: 1.5rem;
+    margin: 15px 0;
+}
+
+.intro {
+    background: white;
+    padding: 25px;
+    border-radius: 16px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    line-height: 1.8;
+}
+
+.botoes-principais {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin: 30px 0;
+}
+
+.btn {
+    padding: 16px 24px;
+    border-radius: 12px;
+    border: none;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.btn-principal {
+    background: linear-gradient(135deg, #d53f8c 0%, #b83280 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(213, 63, 140, 0.3);
+}
+
+.voltar {
+    display: inline-block;
+    margin-top: 10px;
+    color: #b76e79;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.categorias {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.categorias button {
+    padding: 10px 16px;
+    border-radius: 20px;
+    border: 2px solid #f0c8d0;
+    background: white;
+    color: #9e2d55;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.categorias button.categoria-ativo,
+.categorias button:hover {
+    background: #d53f8c;
+    color: white;
+    border-color: #d53f8c;
+}
+
+.grade-presentes {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.cartao-presente {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    text-align: center;
+    transition: transform 0.2s;
+}
+
+.cartao-presente:hover {
+    transform: translateY(-5px);
+}
+
+.cartao-presente h3 {
+    font-size: 1.1rem;
+    margin: 10px 0;
+    color: #4a1942;
+}
+
+.valor {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #b83280;
+    margin: 10px 0;
+}
+
+.btn-escolher {
+    background: #fce7f3;
+    color: #9e2d55;
+    padding: 10px 20px;
+    font-size: 0.95rem;
+}
+
+footer {
+    text-align: center;
+    margin-top: 50px;
+    padding: 30px;
+    color: #b76e79;
+    font-size: 1rem;
+}
+
+@media (max-width: 600px) {
+    h1 { font-size: 1.4rem; }
+    .grade-presentes { grid-template-columns: 1fr; }
+}

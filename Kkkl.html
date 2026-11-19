@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presentes - Amor em Lista 💍</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Nossos Presentes 🎁</h1>
+            <a href="index.html" class="voltar">← Voltar</a>
+        </header>
+
+        <div class="categorias">
+            <button class="categoria-ativo" onclick="filtrarTodos()">Todos</button>
+            <button onclick="filtrar('casa')">🏠 Casa</button>
+            <button onclick="filtrar('cozinha')">🍳 Cozinha</button>
+            <button onclick="filtrar('quarto')">🛏️ Quarto</button>
+            <button onclick="filtrar('banheiro')">🚿 Banheiro</button>
+            <button onclick="filtrar('outros')">🎀 Outros</button>
+        </div>
+
+        <div id="lista-presentes" class="grade-presentes">
+            <!-- Os presentes aparecem aqui -->
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
