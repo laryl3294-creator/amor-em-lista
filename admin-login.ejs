@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head><%- include('partials/head') %></head>
+<body>
+<%- include('partials/header') %>
+<section class="secao" style="max-width:560px;">
+  <div class="secao-titulo">
+    <div class="peq">Acesso restrito</div>
+    <h2>Painel Administrativo</h2>
+  </div>
+  <div class="painel" style="text-align:center;">
+    <% if (oauthReady) { %>
+      <p style="margin-bottom:24px; color:var(--texto-suave);">Apenas os e-mails autorizados dos noivos podem acessar.</p>
+      <a href="/auth/google" class="btn btn-dourado">Entrar com Google</a>
+    <% } else { %>
+      <p style="color:var(--texto-suave); margin-bottom:18px; text-align:left;">
+        O login com Google ainda não está configurado. Para ativá-lo, defina estas variáveis de ambiente
+        (Secrets do Replit / variáveis de ambiente da hospedagem):
+      </p>
+      <div class="pix-codigo" style="text-align:left;">
+GOOGLE_CLIENT_ID=seu_client_id.apps.googleusercontent.com<br>
+GOOGLE_CLIENT_SECRET=sua_chave_secreta<br>
+SESSION_SECRET=uma_chave_aleatoria_longa<br>
+BASE_URL=<%= baseUrl %>
+      </div>
+      <ol style="text-align:left; margin:18px 0 18px 20px; font-size:0.88rem; color:var(--texto);">
+        <li>Acesse <strong>console.cloud.google.com</strong> → APIs e Serviços → Credenciais.</li>
+        <li>Crie uma credencial do tipo <strong>"ID do cliente OAuth"</strong> (tipo: Aplicativo da Web).</li>
+        <li>Em <strong>Origens JavaScript autorizadas</strong>, adicione: <code><%= baseUrl %></code></li>
+        <li>Em <strong>URIs de redirecionamento autorizados</strong>, adicione: <code><%= baseUrl %>/auth/google/callback</code></li>
+        <li>Cole o Client ID e o Client Secret nas variáveis acima e reinicie o app.</li>
+        <li>Apenas estes e-mails entram: <strong>laryl3294@gmail.com</strong> e <strong>isaias.gestao19@gmail.com</strong>.</li>
+      </ol>
+      <p style="font-size:0.78rem; color:var(--rosa-queimado);">Enquanto não configurar, o painel permanece bloqueado por segurança.</p>
+    <% } %>
+  </div>
+</section>
+<%- include('partials/footer') %>
+</body>
+</html>

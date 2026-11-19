@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head><%- include('partials/head') %></head>
+<body>
+<header class="topo">
+  <div><div class="marca">PAINEL ADMIN</div><div class="sub">Amor em Lista</div></div>
+  <nav>
+    <a href="/">Ver site</a>
+    <a href="/admin/logout">Sair (<%= admin.email %>)</a>
+  </nav>
+</header>
+<div class="admin-wrap">
+  <div class="admin-cabecalho">
+    <h2>Bem-vinda, <%= admin.email.split('@')[0] %> ❤</h2>
+    <div style="font-size:0.8rem; color:var(--texto-suave);">Reserva temporária: <%= reservationMinutes %> min</div>
+  </div>
+
+  <div class="cards-stats">
+    <div class="stat-card"><div class="rotulo">Total Arrecadado</div><div class="numero"><%= formatBRL(stats.totalArrecadado) %></div></div>
+    <div class="stat-card"><div class="rotulo">Presentes Pagos</div><div class="numero"><%= stats.pagos %></div></div>
+    <div class="stat-card"><div class="rotulo">Disponíveis</div><div class="numero"><%= stats.disponiveis %> / <%= stats.total %></div></div>
+    <div class="stat-card"><div class="rotulo">Pendentes</div><div class="numero" style="color:var(--rosa-queimado);"><%= stats.pendentes %></div></div>
+  </div>
+
+  <div class="painel">
+    <h3>⏳ Pagamentos Aguardando Confirmação</h3>
+    <% if (pendentes.length === 0) { %>
+      <p style="color:var(--texto-suave); font-size:0.9rem;">Nenhum pagamento pendente no momento.</p>
+    <% } else { %>
+      <table class="tabela">
+        <thead><tr><th>Presente</th><th>Valor</th><th>Convidado</th><th>Data/Hora</th><th>Avisou que pagou</th><th>Ações</th></tr></thead>
+        <tbody>
+        <% pendentes.forEach(o => { %>
+          <tr id="ped-<%= o.id %>">
+            <td><%= o.gift_name %></td>
+            <td><%= formatBRL(o.value_cents) %></td>
+            <td><%= o.guest_name || '—' %></td>
+            <td><%= o.created_at %></td>
+            <td><%= o.guest_marked_paid_at ? 'Sim ('+o.guest_marked_paid_at+')' : 'Ainda não' %></td>
+            <td>
+              <button class="btn-mini confirmar" onclick="acaoPedido(<%= o.id %>,'confirm')">Confirmar Pagamento</button>
+              <button class="btn-mini recusar" onclick="acaoPedido(<%= o.id %>,'recuse')">Recusar/Cancelar</button>
+            </td>
+          </tr>
+        <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+  </div>
+
+  <div class="painel">
+    <h3>📜 Histórico de Contribuições</h3>
+    <table class="tabela">
+      <thead><tr><th>Presente</th><th>Valor</th><th>Convidado</th><th>Status</th><th>Confirmado por</th><th>Data</th></tr></thead>
+      <tbody>
+      <% historico.forEach(o => { %>
+        <tr>
+          <td><%= o.gift_name %></td>
+          <td><%= formatBRL(o.value_cents) %></td>
+          <td><%= o.guest_name || '—' %></td>
+          <td>
+            <% if (o.status==='PAGO') { %><span class="badge badge-pago">Pago</span>
+            <% } else if (o.status==='RECUSADO') { %><span class="badge badge-recusado">Recusado</span>
+            <% } else { %><span class="badge badge-recusado">Expirado</span><% } %>
+          </td>
+          <td><%= o.confirmed_by || o.recused_by || '—' %></td>
+          <td><%= o.confirmed_at || o.recused_at || o.created_at %></td>
+        </tr>
+      <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="painel">
+    <h3>🎁 Gerenciar Presentes (<%= gifts.length %>)</h3>
+    <form id="form-presente" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:10px; margin-bottom:20px;">
+      <input type="hidden" id="p-id">
+      <div class="campo" style="margin:0;"><label>Categoria</label>
+        <select id="p-cat"><% cats.forEach(c => { %><option value="<%= c.id %>"><%= c.name %></option><% }) %></select>
+      </div>
+      <div class="campo" style="margin:0;"><label>Nome</label><input id="p-nome" required maxlength="120"></div>
+      <div class="campo" style="margin:0;"><label>Descrição</label><input id="p-desc" required maxlength="300"></div>
+      <div class="campo" style="margin:0;"><label>Valor (R$)</label><input id="p-valor" type="number" step="0.01" min="0" required></div>
+      <div class="campo" style="margin:0;"><label>Arquivo da imagem</label><input id="p-img" placeholder="gift-XX.jpg" required></div>
+      <div class="campo" style="margin:0;"><label>Status</label>
+        <select id="p-status"><option value="DISPONIVEL">Disponível</option><option value="PAGO">Pago</option></select>
+      </div>
+      <div style="display:flex; align-items:flex-end; gap:8px;">
+        <button type="submit" class="btn btn-vinho" style="padding:12px 20px; font-size:0.7rem;">Salvar</button>
+        <button type="button" class="btn btn-contorno" style="padding:12px 20px; font-size:0.7rem;" onclick="limparForm()">Novo</button>
+      </div>
+    </form>
+    <table class="tabela">
+      <thead><tr><th>#</th><th>Nome</th><th>Categoria</th><th>Valor</th><th>Status</th><th>Imagem</th><th>Ações</th></tr></thead>
+      <tbody>
+      <% gifts.forEach(g => { %>
+        <tr>
+          <td><%= g.id %></td>
+          <td><%= g.name %></td>
+          <td><%= g.category_name %></td>
+          <td><%= formatBRL(g.value_cents) %></td>
+          <td><%= g.status==='PAGO' ? '<span class="badge badge-pago">Pago</span>' : '<span class="badge badge-pendente">Disponível</span>' %></td>
+          <td style="font-size:0.7rem;"><%= g.image %></td>
+          <td>
+            <button class="btn-mini editar" onclick='editar(<%= JSON.stringify({id:g.id,cat:g.category_id,nome:g.name,desc:g.description,valor:(g.value_cents/100).toFixed(2),img:g.image,status:g.status}) %>)'>Editar</button>
+            <button class="btn-mini recusar" onclick="excluir(<%= g.id %>,'<%= g.name.replace(/'/g,"\\'") %>')">Excluir</button>
+          </td>
+        </tr>
+      <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="painel">
+    <h3>🔒 Registro de Ações Administrativas</h3>
+    <table class="tabela">
+      <thead><tr><th>Quando</th><th>Quem</th><th>Ação</th><th>Detalhes</th></tr></thead>
+      <tbody>
+      <% logs.forEach(l => { %>
+        <tr><td><%= l.created_at %></td><td><%= l.admin_email %></td><td><%= l.action %></td><td style="font-size:0.75rem;"><%= l.details || '' %></td></tr>
+      <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+<script>
+async function acaoPedido(id, tipo){
+  const label = tipo === 'confirm' ? 'CONFIRMAR o pagamento' : 'RECUSAR/CANCELAR a solicitação';
+  if (!confirm('Tem certeza que deseja ' + label + '? Esta ação é registrada.')) return;
+  const r = await fetch('/api/admin/orders/' + id + '/' + tipo, { method: 'POST' });
+  if (r.ok) { document.getElementById('ped-' + id)?.remove(); location.reload(); }
+  else { const j = await r.json().catch(()=>({})); alert('Erro: ' + (j.error || 'tente novamente')); }
+}
+function editar(g){
+  document.getElementById('p-id').value = g.id;
+  document.getElementById('p-cat').value = g.cat;
+  document.getElementById('p-nome').value = g.nome;
+  document.getElementById('p-desc').value = g.desc;
+  document.getElementById('p-valor').value = g.valor;
+  document.getElementById('p-img').value = g.img;
+  document.getElementById('p-status').value = g.status;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function limparForm(){
+  document.getElementById('form-presente').reset();
+  document.getElementById('p-id').value = '';
+}
+async function excluir(id, nome){
+  if (!confirm('Excluir o presente "' + nome + '"?')) return;
+  const r = await fetch('/api/admin/gifts/' + id, { method: 'DELETE' });
+  if (r.ok) location.reload(); else alert('Erro ao excluir');
+}
+document.getElementById('form-presente').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const id = document.getElementById('p-id').value;
+  const body = {
+    category_id: document.getElementById('p-cat').value,
+    name: document.getElementById('p-nome').value,
+    description: document.getElementById('p-desc').value,
+    value: document.getElementById('p-valor').value,
+    image: document.getElementById('p-img').value,
+    status: document.getElementById('p-status').value,
+  };
+  const r = await fetch(id ? ('/api/admin/gifts/' + id) : '/api/admin/gifts', {
+    method: id ? 'PUT' : 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (r.ok) location.reload(); else { const j = await r.json().catch(()=>({})); alert('Erro: ' + (j.error || 'verifique os campos')); }
+});
+</script>
+</body>
+</html>
